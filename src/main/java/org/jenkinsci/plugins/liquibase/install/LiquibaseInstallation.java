@@ -11,27 +11,23 @@ import hudson.tools.ToolDescriptor;
 import hudson.tools.ToolInstallation;
 import hudson.tools.ToolInstaller;
 import hudson.tools.ToolProperty;
-import jenkins.model.Jenkins;
-import org.jenkinsci.plugins.liquibase.builder.UpdateBuilder;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.DataBoundSetter;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 
 public class LiquibaseInstallation extends ToolInstallation implements NodeSpecific<LiquibaseInstallation>, EnvironmentSpecific<LiquibaseInstallation> {
 
     private static final long serialVersionUID = 1;
 
-    private String liquibaseHome;
+    private final String liquibaseHome;
     private String databaseDriverUrl;
 
-
     @DataBoundConstructor
-    public LiquibaseInstallation(String name, String home, String databaseDriverUrl,  List<? extends ToolProperty<?>> properties) {
+    public LiquibaseInstallation(String name, String home, String databaseDriverUrl, List<? extends ToolProperty<?>> properties) {
         super(Util.fixEmptyAndTrim(name), Util.fixEmptyAndTrim("liquibase"), properties);
         liquibaseHome = home;
         this.databaseDriverUrl = databaseDriverUrl;
@@ -51,13 +47,12 @@ public class LiquibaseInstallation extends ToolInstallation implements NodeSpeci
     public String getHome() {
         String resolvedHome;
         if (liquibaseHome != null) {
-            resolvedHome= liquibaseHome;
+            resolvedHome = liquibaseHome;
         } else {
-            resolvedHome=super.getHome();
+            resolvedHome = super.getHome();
         }
         return resolvedHome;
     }
-
 
     public File getLiquibaseJar() {
         return new File(liquibaseHome, "liquibase.jar");
@@ -96,6 +91,7 @@ public class LiquibaseInstallation extends ToolInstallation implements NodeSpeci
             return Collections.singletonList(new LiquibaseInstaller(null));
         }
 
+        @Override
         public LiquibaseInstallation[] getInstallations() {
             return Arrays.copyOf(installations, installations.length);
         }

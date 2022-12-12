@@ -1,11 +1,11 @@
 package org.jenkinsci.plugins.liquibase.dsl;
 
+import java.util.Map;
 import javaposse.jobdsl.dsl.Context;
 
-import java.util.Map;
-
 /**
- * One context is supplied for all liquibase execution types (be it update, rollback, etc).
+ * One context is supplied for all liquibase execution types (be it update,
+ * rollback, etc).
  */
 public class LiquibaseContext implements Context {
 
@@ -19,7 +19,7 @@ public class LiquibaseContext implements Context {
     private String credentialsId;
     protected Integer rollbackCount = 0;
     private Integer rollbackLastHours;
-    private String rollbackToTag ;
+    private String rollbackToTag;
     private String rollbackToDate;
     protected boolean testRollbacks;
     private boolean dropAll;
@@ -189,7 +189,6 @@ public class LiquibaseContext implements Context {
         } else {
             result = sb.toString();
         }
-
 
         return result;
     }

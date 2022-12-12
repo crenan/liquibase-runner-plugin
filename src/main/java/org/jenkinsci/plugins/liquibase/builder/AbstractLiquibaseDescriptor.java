@@ -1,5 +1,7 @@
 package org.jenkinsci.plugins.liquibase.builder;
 
+import static com.cloudbees.plugins.credentials.CredentialsMatchers.anyOf;
+import static com.cloudbees.plugins.credentials.CredentialsMatchers.instanceOf;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
@@ -14,9 +16,6 @@ import org.jenkinsci.plugins.liquibase.install.LiquibaseInstallation;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.QueryParameter;
 
-import static com.cloudbees.plugins.credentials.CredentialsMatchers.anyOf;
-import static com.cloudbees.plugins.credentials.CredentialsMatchers.instanceOf;
-
 public abstract class AbstractLiquibaseDescriptor extends BuildStepDescriptor<Builder> {
 
     public AbstractLiquibaseDescriptor(Class<? extends Builder> clazz) {
@@ -30,8 +29,8 @@ public abstract class AbstractLiquibaseDescriptor extends BuildStepDescriptor<Bu
     }
 
     public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item,
-                                                 @QueryParameter String credentialsId,
-                                                 @AncestorInPath Project project) {
+            @QueryParameter String credentialsId,
+            @AncestorInPath Project project) {
         StandardListBoxModel result = new StandardListBoxModel();
 
         if (item == null) {
@@ -58,7 +57,6 @@ public abstract class AbstractLiquibaseDescriptor extends BuildStepDescriptor<Bu
 
     public void setInstallations(LiquibaseInstallation... installations) {
         Jenkins.get().getDescriptorByType(LiquibaseInstallation.DescriptorImpl.class).setInstallations(installations);
-
     }
 
 }

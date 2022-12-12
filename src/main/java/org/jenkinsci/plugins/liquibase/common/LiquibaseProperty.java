@@ -10,7 +10,6 @@ public enum LiquibaseProperty {
     URL(),
     LOG_LEVEL("logLevel");
 
-
     private String cliOption;
 
     LiquibaseProperty(String cliOption) {

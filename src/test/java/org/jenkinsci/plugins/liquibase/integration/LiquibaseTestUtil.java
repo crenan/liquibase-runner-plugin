@@ -1,15 +1,14 @@
 package org.jenkinsci.plugins.liquibase.integration;
 
 import hudson.model.FreeStyleProject;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.liquibase.builder.UpdateBuilder;
 import org.junit.rules.TemporaryFolder;
 import org.jvnet.hudson.test.JenkinsRule;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class LiquibaseTestUtil {
     static final String SUNNY_DAY_CHANGESET_XML = "/example-changesets/sunny-day-changeset.xml";

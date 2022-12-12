@@ -5,7 +5,6 @@ import javaposse.jobdsl.dsl.RequiresPlugin;
 import javaposse.jobdsl.dsl.helpers.step.StepContext;
 import javaposse.jobdsl.plugin.ContextExtensionPoint;
 import javaposse.jobdsl.plugin.DslExtensionMethod;
-
 import org.jenkinsci.plugins.liquibase.builder.*;
 
 @SuppressWarnings("MethodMayBeStatic")
@@ -29,7 +28,7 @@ public class LiquibaseRunnerDslExtension extends ContextExtensionPoint {
         LiquibaseContext context = composeContext(closure);
         setCommonBuilderProperties(rollbackBuilder, context);
 
-        if (context.getRollbackCount()!=null) {
+        if (context.getRollbackCount() != null) {
             rollbackBuilder.setNumberOfChangesetsToRollback(String.valueOf(context.getRollbackCount()));
             rollbackBuilder.setRollbackType(RollbackBuilder.RollbackStrategy.COUNT.name());
         }
@@ -42,7 +41,7 @@ public class LiquibaseRunnerDslExtension extends ContextExtensionPoint {
             rollbackBuilder.setRollbackType(RollbackBuilder.RollbackStrategy.DATE.name());
         }
 
-        if (context.getRollbackLastHours()!=null) {
+        if (context.getRollbackLastHours() != null) {
             rollbackBuilder.setRollbackLastHours(String.valueOf(context.getRollbackLastHours()));
             rollbackBuilder.setRollbackType(RollbackBuilder.RollbackStrategy.RELATIVE.name());
         }

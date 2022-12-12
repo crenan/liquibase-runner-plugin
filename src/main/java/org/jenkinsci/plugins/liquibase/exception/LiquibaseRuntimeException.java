@@ -4,6 +4,7 @@ package org.jenkinsci.plugins.liquibase.exception;
  * Translates any liquibase checked exceptions as runtime exceptions.
  */
 public class LiquibaseRuntimeException extends RuntimeException {
+
     public LiquibaseRuntimeException() {
         super();
     }

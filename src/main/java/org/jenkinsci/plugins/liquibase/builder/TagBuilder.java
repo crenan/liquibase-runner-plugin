@@ -9,16 +9,16 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
+import java.util.Properties;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
-
-import java.util.Properties;
 
 /**
  * Jenkins builder which evaluates liquibase changesets.
  */
 @SuppressWarnings("ProhibitedExceptionThrown")
 public class TagBuilder extends AbstractLiquibaseBuilder {
+
     @Extension
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 

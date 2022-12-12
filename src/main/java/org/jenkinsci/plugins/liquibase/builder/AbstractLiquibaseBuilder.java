@@ -7,6 +7,12 @@ import hudson.model.*;
 import hudson.tasks.Builder;
 import hudson.tools.ToolInstallation;
 import hudson.util.ArgumentListBuilder;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.URL;
+import java.util.Properties;
+import javax.annotation.Nonnull;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.plugins.liquibase.common.LiquibaseProperty;
 import org.jenkinsci.plugins.liquibase.common.PropertiesAssembler;
@@ -15,14 +21,8 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.net.URL;
-import java.util.Properties;
-
 public abstract class AbstractLiquibaseBuilder extends Builder implements SimpleBuildStep {
+
     private static final Logger LOG = LoggerFactory.getLogger(AbstractLiquibaseBuilder.class);
 
     protected String installationName;
@@ -95,12 +95,12 @@ public abstract class AbstractLiquibaseBuilder extends Builder implements Simple
 
     @Override
     public void perform(@Nonnull Run<?, ?> build,
-                        @Nonnull FilePath workspace,
-                        @Nonnull Launcher launcher,
-                        @Nonnull TaskListener listener) throws InterruptedException, IOException {
+            @Nonnull FilePath workspace,
+            @Nonnull Launcher launcher,
+            @Nonnull TaskListener listener) throws InterruptedException, IOException {
 
         final PrintStream log = listener.getLogger();
-        log.println("\n\nRunning "+getDescriptor().getDisplayName()+"....");
+        log.println("\n\nRunning " + getDescriptor().getDisplayName() + "....");
 
         final EnvVars environment = build.getEnvironment(listener);
 
@@ -112,14 +112,13 @@ public abstract class AbstractLiquibaseBuilder extends Builder implements Simple
             build.setResult(Result.NOT_BUILT);
             return;
         }
-        log.println("Liquibase home: "+installation.getHome());
+        log.println("Liquibase home: " + installation.getHome());
 
         if (!installation.isValidLiquibaseHome()) {
-            listener.fatalError("Liquibase installation "+installation.getHome()+" is not a valid Liquibase install");
+            listener.fatalError("Liquibase installation " + installation.getHome() + " is not a valid Liquibase install");
             build.setResult(Result.NOT_BUILT);
             return;
         }
-
 
         if (!Strings.isNullOrEmpty(installation.getDatabaseDriverUrl())) {
             Iterable<String> urls = Splitter.on(",").trimResults().split(installation.getDatabaseDriverUrl());
@@ -134,12 +133,11 @@ public abstract class AbstractLiquibaseBuilder extends Builder implements Simple
             }
         }
 
-
         String liquibaseCmd;
         if (Functions.isWindows()) {
-            liquibaseCmd = installation.getHome()+"\\liquibase.bat";
+            liquibaseCmd = installation.getHome() + "\\liquibase.bat";
         } else {
-            liquibaseCmd = installation.getHome()+"/liquibase";
+            liquibaseCmd = installation.getHome() + "/liquibase";
         }
 
         ArgumentListBuilder cliCommand = new ArgumentListBuilder(liquibaseCmd);
@@ -249,14 +247,15 @@ public abstract class AbstractLiquibaseBuilder extends Builder implements Simple
     public String getUsername() {
         return username;
     }
+
     @Deprecated
     public String getPassword() {
         return password;
     }
 
     public void clearLegacyCredentials() {
-        username=null;
-        password=null;
+        username = null;
+        password = null;
     }
 
     public boolean hasLegacyCredentials() {

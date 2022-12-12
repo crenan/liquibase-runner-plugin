@@ -1,28 +1,20 @@
 package org.jenkinsci.plugins.liquibase.integration;
 
+import java.io.File;
+import java.io.IOException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
-import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-
-import static org.jenkinsci.plugins.liquibase.matchers.BuildResultMatcher.isSuccessful;
-import static org.junit.Assert.assertThat;
 
 
 public class LiquibasePipelineTest {

@@ -1,36 +1,20 @@
 package org.jenkinsci.plugins.liquibase.dsl;
 
-import hudson.model.AbstractProject;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
-import hudson.model.Project;
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import javaposse.jobdsl.plugin.ExecuteDslScripts;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.jenkinsci.plugins.liquibase.builder.RollbackBuilder;
-import org.jenkinsci.plugins.liquibase.builder.UpdateBuilder;
-import org.jenkinsci.plugins.liquibase.integration.LiquibaseTestUtil;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.jenkinsci.plugins.liquibase.matchers.BuildResultMatcher.isSuccessful;
-import static org.jenkinsci.plugins.liquibase.matchers.ProjectNameMatcher.isProjectWithName;
-import static org.junit.Assert.assertThat;
 
 public class LiquibaseRunnerDslExtensionTest {
 

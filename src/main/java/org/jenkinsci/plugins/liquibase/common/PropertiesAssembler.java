@@ -1,41 +1,40 @@
 package org.jenkinsci.plugins.liquibase.common;
 
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.Run;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
-
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.liquibase.builder.AbstractLiquibaseBuilder;
 import org.jenkinsci.plugins.liquibase.exception.LiquibaseRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import com.cloudbees.plugins.credentials.domains.DomainRequirement;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-
 public class PropertiesAssembler {
+
     private static final Logger LOG = LoggerFactory.getLogger(PropertiesAssembler.class);
     private static final String DEFAULT_JDBC_URL = "jdbc:h2:mem:builder-db";
 
     /**
-     * Creates a properties instance for use with liquibase execution.  Property values may come from these sources,
-     * in order of least to most precedence:
+     * Creates a properties instance for use with liquibase execution. Property
+     * values may come from these sources, in order of least to most precedence:
      * <ul>
      * <li>Plugin Default values</li>
-     * <li>Values from properties file described by {@link AbstractLiquibaseBuilder#liquibasePropertiesPath}</li>
+     * <li>Values from properties file described by
+     * {@link AbstractLiquibaseBuilder#liquibasePropertiesPath}</li>
      * <li>Values on the {@link AbstractLiquibaseBuilder} itself.</li>
      * </ul>
-     * Furthermore, any token expressions found are replaced with values found in the passed environment IF build
-     * is an AbstractBuild.
+     * Furthermore, any token expressions found are replaced with values found
+     * in the passed environment IF build is an AbstractBuild.
      *
      * @param liquibaseBuilder
      * @param build
@@ -44,7 +43,7 @@ public class PropertiesAssembler {
      * @return
      */
     public static Properties createLiquibaseProperties(AbstractLiquibaseBuilder liquibaseBuilder,
-                                                       Run<?, ?> build, Map environment, FilePath workspace)
+            Run<?, ?> build, Map environment, FilePath workspace)
             throws IOException, InterruptedException {
         Properties properties = new Properties();
 
@@ -55,8 +54,8 @@ public class PropertiesAssembler {
     }
 
     private static void assembleFromPropertiesFile(AbstractLiquibaseBuilder liquibaseBuilder,
-                                                   Run<?, ?> build,
-                                                   Map environment, FilePath workspace, Properties properties) {
+            Run<?, ?> build,
+            Map environment, FilePath workspace, Properties properties) {
         String propertiesPath;
         if (build instanceof AbstractBuild) {
             propertiesPath = hudson.Util.replaceMacro(liquibaseBuilder.getLiquibasePropertiesPath(), environment);
@@ -67,18 +66,17 @@ public class PropertiesAssembler {
     }
 
     protected static void assembleFromProjectConfiguration(AbstractLiquibaseBuilder liquibaseBuilder,
-                                                           Properties properties,
-                                                           Map environment, Run<?, ?> build)
+            Properties properties,
+            Map environment, Run<?, ?> build)
             throws IOException, InterruptedException {
 
-
         if (!Strings.isNullOrEmpty(liquibaseBuilder.getCredentialsId())) {
-            StandardUsernamePasswordCredentials credentials =
-                    CredentialsProvider.findCredentialById(liquibaseBuilder.getCredentialsId(),
+            StandardUsernamePasswordCredentials credentials
+                    = CredentialsProvider.findCredentialById(liquibaseBuilder.getCredentialsId(),
                             StandardUsernamePasswordCredentials.class, build,
                             Lists.<DomainRequirement>newArrayList());
 
-            if (credentials!=null) {
+            if (credentials != null) {
                 String username = credentials.getUsername();
                 if (!Strings.isNullOrEmpty(username)) {
                     setProperty(properties, LiquibaseProperty.USERNAME, username);
@@ -97,8 +95,8 @@ public class PropertiesAssembler {
     }
 
     private static void assembleFromPropertiesFile(Properties properties,
-                                                   String liquibasePropertiesPath,
-                                                   FilePath workspace) {
+            String liquibasePropertiesPath,
+            FilePath workspace) {
 
         if (!Strings.isNullOrEmpty(liquibasePropertiesPath)) {
             if (workspace != null) {
@@ -119,8 +117,8 @@ public class PropertiesAssembler {
                 }
             } else {
                 throw new LiquibaseRuntimeException(
-                        "Project workspace was found to be null when attempting to load liquibase properties file at '" +
-                                liquibasePropertiesPath + '.');
+                        "Project workspace was found to be null when attempting to load liquibase properties file at '"
+                        + liquibasePropertiesPath + '.');
             }
         }
     }
@@ -134,8 +132,8 @@ public class PropertiesAssembler {
     }
 
     protected static void addPropertyIfDefined(Properties properties,
-                                               LiquibaseProperty liquibaseProperty,
-                                               String value, Map environment, Run<?, ?> build) {
+            LiquibaseProperty liquibaseProperty,
+            String value, Map environment, Run<?, ?> build) {
         if (!Strings.isNullOrEmpty(value)) {
             String resolvedValue;
             if (build instanceof AbstractBuild) {

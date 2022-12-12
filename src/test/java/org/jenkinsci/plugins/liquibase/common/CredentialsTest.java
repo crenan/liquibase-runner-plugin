@@ -8,10 +8,16 @@ import hudson.EnvVars;
 import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import static org.hamcrest.CoreMatchers.is;
 import org.jenkinsci.plugins.liquibase.builder.UpdateBuilder;
 import org.jenkinsci.plugins.liquibase.integration.LiquibaseTestUtil;
+import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -21,14 +27,6 @@ import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CredentialsTest {
