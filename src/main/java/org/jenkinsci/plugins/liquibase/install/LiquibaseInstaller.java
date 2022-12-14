@@ -36,4 +36,5 @@ public class LiquibaseInstaller extends DownloadFromUrlInstaller {
 
         return installationRoot;
     }
+
 }

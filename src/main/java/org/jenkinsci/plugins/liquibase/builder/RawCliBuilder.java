@@ -11,6 +11,7 @@ import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
 import java.io.IOException;
 import java.util.Properties;
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
@@ -31,7 +32,8 @@ public class RawCliBuilder extends AbstractLiquibaseBuilder {
     }
 
     @Override
-    protected void addCommandAndArguments(ArgumentListBuilder cliCommand, Properties configProperties, Run<?, ?> build, EnvVars environment, TaskListener listener) throws IOException {
+    protected void addCommandAndArguments(ArgumentListBuilder cliCommand, Properties configProperties,
+            Run<?, ?> build, EnvVars environment, TaskListener listener) throws IOException {
         if (commandArguments == null || commandArguments.trim().equals("")) {
             throw new AbortException("No command line specified in '" + getDescriptor().getDisplayName() + "' configuration");
         }
@@ -53,11 +55,11 @@ public class RawCliBuilder extends AbstractLiquibaseBuilder {
         this.commandArguments = commandArguments;
     }
 
+    @Symbol("liquibaseCLICmd")
     @Extension
     public static class DescriptorImpl extends AbstractLiquibaseDescriptor {
 
         public DescriptorImpl() {
-            load();
         }
 
         public DescriptorImpl(Class<? extends RawCliBuilder> clazz) {
@@ -73,7 +75,6 @@ public class RawCliBuilder extends AbstractLiquibaseBuilder {
         public String getDisplayName() {
             return "Liquibase: CLI Command";
         }
-
     }
 
 }

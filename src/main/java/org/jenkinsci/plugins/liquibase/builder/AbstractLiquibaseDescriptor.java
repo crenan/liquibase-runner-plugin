@@ -18,30 +18,25 @@ import org.kohsuke.stapler.QueryParameter;
 
 public abstract class AbstractLiquibaseDescriptor extends BuildStepDescriptor<Builder> {
 
-    public AbstractLiquibaseDescriptor(Class<? extends Builder> clazz) {
-        super(clazz);
-        load();
-    }
-
     public AbstractLiquibaseDescriptor() {
         super();
-        load();
+    }
+
+    public AbstractLiquibaseDescriptor(Class<? extends Builder> clazz) {
+        super(clazz);
     }
 
     public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item,
-            @QueryParameter String credentialsId,
-            @AncestorInPath Project project) {
+            @QueryParameter String credentialsId, @AncestorInPath Project project) {
+
         StandardListBoxModel result = new StandardListBoxModel();
 
         if (item == null) {
             if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
                 return result.includeCurrentValue(credentialsId);
             }
-        } else {
-            if (!item.hasPermission(Item.EXTENDED_READ)
-                    && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
-                return result.includeCurrentValue(credentialsId);
-            }
+        } else if (!item.hasPermission(Item.EXTENDED_READ) && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+            return result.includeCurrentValue(credentialsId);
         }
         return result
                 .includeEmptyValue()

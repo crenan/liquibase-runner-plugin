@@ -9,6 +9,7 @@ import hudson.model.TaskListener;
 import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
 import java.util.Properties;
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -26,7 +27,8 @@ public class UpdateBuilder extends AbstractLiquibaseBuilder {
     }
 
     @Override
-    protected void addCommandAndArguments(ArgumentListBuilder cliCommand, Properties configProperties, Run<?, ?> build, EnvVars environment, TaskListener listener) {
+    protected void addCommandAndArguments(ArgumentListBuilder cliCommand, Properties configProperties,
+            Run<?, ?> build, EnvVars environment, TaskListener listener) {
         cliCommand.add("update");
     }
 
@@ -35,11 +37,11 @@ public class UpdateBuilder extends AbstractLiquibaseBuilder {
         return DESCRIPTOR;
     }
 
+    @Symbol("liquibaseUpdate")
     @Extension
     public static class DescriptorImpl extends AbstractLiquibaseDescriptor {
 
         public DescriptorImpl() {
-            load();
         }
 
         public DescriptorImpl(Class<? extends UpdateBuilder> clazz) {

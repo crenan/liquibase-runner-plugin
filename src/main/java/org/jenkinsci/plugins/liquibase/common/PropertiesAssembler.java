@@ -25,22 +25,21 @@ public class PropertiesAssembler {
     private static final String DEFAULT_JDBC_URL = "jdbc:h2:mem:builder-db";
 
     /**
-     * Creates a properties instance for use with liquibase execution. Property
-     * values may come from these sources, in order of least to most precedence:
+     * Creates a properties instance for use with liquibase execution. Property values may come from these sources, in order of least to most precedence:
      * <ul>
      * <li>Plugin Default values</li>
-     * <li>Values from properties file described by
-     * {@link AbstractLiquibaseBuilder#liquibasePropertiesPath}</li>
+     * <li>Values from properties file described by {@link AbstractLiquibaseBuilder#liquibasePropertiesPath}</li>
      * <li>Values on the {@link AbstractLiquibaseBuilder} itself.</li>
      * </ul>
-     * Furthermore, any token expressions found are replaced with values found
-     * in the passed environment IF build is an AbstractBuild.
+     * Furthermore, any token expressions found are replaced with values found in the passed environment IF build is an AbstractBuild.
      *
      * @param liquibaseBuilder
      * @param build
      * @param environment
      * @param workspace
      * @return
+     * @throws java.io.IOException
+     * @throws java.lang.InterruptedException
      */
     public static Properties createLiquibaseProperties(AbstractLiquibaseBuilder liquibaseBuilder,
             Run<?, ?> build, Map environment, FilePath workspace)
@@ -54,8 +53,7 @@ public class PropertiesAssembler {
     }
 
     private static void assembleFromPropertiesFile(AbstractLiquibaseBuilder liquibaseBuilder,
-            Run<?, ?> build,
-            Map environment, FilePath workspace, Properties properties) {
+            Run<?, ?> build, Map environment, FilePath workspace, Properties properties) {
         String propertiesPath;
         if (build instanceof AbstractBuild) {
             propertiesPath = hudson.Util.replaceMacro(liquibaseBuilder.getLiquibasePropertiesPath(), environment);
@@ -69,7 +67,6 @@ public class PropertiesAssembler {
             Properties properties,
             Map environment, Run<?, ?> build)
             throws IOException, InterruptedException {
-
         if (!Strings.isNullOrEmpty(liquibaseBuilder.getCredentialsId())) {
             StandardUsernamePasswordCredentials credentials
                     = CredentialsProvider.findCredentialById(liquibaseBuilder.getCredentialsId(),
@@ -105,13 +102,9 @@ public class PropertiesAssembler {
                     FilePath liquibaseProperties = workspace.child(liquibasePropertiesPath);
                     streamReader = new InputStreamReader(liquibaseProperties.read(), StandardCharsets.UTF_8);
                     properties.load(streamReader);
-                } catch (IOException e) {
+                } catch (IOException | InterruptedException e) {
                     throw new LiquibaseRuntimeException(
                             "Unable to load properties file at '" + liquibasePropertiesPath + "'", e);
-                } catch (InterruptedException e) {
-                    throw new LiquibaseRuntimeException(
-                            "Unable to load properties file at '" + liquibasePropertiesPath + "'", e);
-
                 } finally {
                     IOUtils.closeQuietly(streamReader);
                 }
@@ -131,8 +124,7 @@ public class PropertiesAssembler {
         properties.setProperty(liquibaseProperty.propertyName(), value);
     }
 
-    protected static void addPropertyIfDefined(Properties properties,
-            LiquibaseProperty liquibaseProperty,
+    protected static void addPropertyIfDefined(Properties properties, LiquibaseProperty liquibaseProperty,
             String value, Map environment, Run<?, ?> build) {
         if (!Strings.isNullOrEmpty(value)) {
             String resolvedValue;
@@ -144,4 +136,5 @@ public class PropertiesAssembler {
             properties.setProperty(liquibaseProperty.propertyName(), resolvedValue);
         }
     }
+
 }

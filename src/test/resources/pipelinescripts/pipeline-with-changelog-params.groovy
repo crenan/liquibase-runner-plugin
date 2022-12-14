@@ -1,10 +1,10 @@
 package pipelinescripts;
 
 node {
-  ws('@WORKSPACE@') {
+    ws('@WORKSPACE@') {
 
-    liquibaseUpdate(changeLogFile: 'example-changesets/with-changelog-property.xml',
+        liquibaseUpdate(changeLogFile: 'example-changesets/with-changelog-property.xml',
             changeLogParameterList: ['sample.table.name=@PARAM_VALUE@'])
-  }
+    }
 }
 

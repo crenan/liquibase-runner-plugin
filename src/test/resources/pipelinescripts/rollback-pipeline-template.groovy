@@ -1,13 +1,13 @@
 package pipelinescripts;
 
 node {
-  ws('@WORKSPACE@') {
-    liquibaseUpdate(url: '@DB_URL@',
+    ws('@WORKSPACE@') {
+        liquibaseUpdate(url: '@DB_URL@',
             changeLogFile: 'sunny-day-changeset.xml')
 
-    liquibaseRollback(
+        liquibaseRollback(
             url: '@DB_URL@',
             changeLogFile: 'sunny-day-changeset.xml', rollbackCount: 2)
-  }
+    }
 }
 

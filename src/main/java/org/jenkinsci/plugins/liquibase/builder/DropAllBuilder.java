@@ -9,10 +9,11 @@ import hudson.model.TaskListener;
 import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
 import java.util.Properties;
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * Jenkins builder which evaluates liquibase changesets.
+ * Build step that invokes liquibase's drop all command against a target database.
  */
 @SuppressWarnings("ProhibitedExceptionThrown")
 public class DropAllBuilder extends AbstractLiquibaseBuilder {
@@ -26,7 +27,8 @@ public class DropAllBuilder extends AbstractLiquibaseBuilder {
     }
 
     @Override
-    protected void addCommandAndArguments(ArgumentListBuilder cliCommand, Properties configProperties, Run<?, ?> build, EnvVars environment, TaskListener listener) {
+    protected void addCommandAndArguments(ArgumentListBuilder cliCommand, Properties configProperties,
+            Run<?, ?> build, EnvVars environment, TaskListener listener) {
         cliCommand.add("dropAll");
     }
 
@@ -35,11 +37,11 @@ public class DropAllBuilder extends AbstractLiquibaseBuilder {
         return DESCRIPTOR;
     }
 
+    @Symbol("liquibaseDropAll")
     @Extension
     public static class DescriptorImpl extends AbstractLiquibaseDescriptor {
 
         public DescriptorImpl() {
-            load();
         }
 
         public DescriptorImpl(Class<? extends DropAllBuilder> clazz) {

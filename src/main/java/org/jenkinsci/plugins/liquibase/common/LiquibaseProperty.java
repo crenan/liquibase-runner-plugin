@@ -1,5 +1,7 @@
 package org.jenkinsci.plugins.liquibase.common;
 
+import java.util.Locale;
+
 public enum LiquibaseProperty {
     USERNAME,
     PASSWORD,
@@ -20,12 +22,10 @@ public enum LiquibaseProperty {
     }
 
     public String propertyName() {
-        String optionName;
-        if (cliOption == null) {
-            optionName = name().toLowerCase();
-        } else {
-            optionName = cliOption;
+        if (cliOption != null) {
+            return cliOption;
         }
-        return optionName;
+        return name().toLowerCase(Locale.ENGLISH);
     }
+
 }

@@ -1,11 +1,14 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+
+<j:jelly xmlns:j="jelly:core"
+         xmlns:f="/lib/form">
+
     <f:entry title="${%Name}" field="name">
         <f:textbox/>
     </f:entry>
 
     <f:optionalBlock name="downloadDriver" title="Auto-Download Driver" inline="true"
-                     checked="${instance.databaseDriverUrl!=null}">
+                     checked="${instance.databaseDriverUrl!=''}">
         <f:entry title="Download URL(s)" field="databaseDriverUrl">
             <f:expandableTextbox value="${instance.databaseDriverUrl}"/>
         </f:entry>

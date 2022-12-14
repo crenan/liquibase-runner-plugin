@@ -24,4 +24,5 @@ public class LiquibaseRuntimeException extends RuntimeException {
     public LiquibaseRuntimeException(String s, Exception e) {
         super(s, e);
     }
+
 }

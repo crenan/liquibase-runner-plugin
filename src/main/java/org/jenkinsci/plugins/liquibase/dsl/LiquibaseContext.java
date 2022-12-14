@@ -4,31 +4,28 @@ import java.util.Map;
 import javaposse.jobdsl.dsl.Context;
 
 /**
- * One context is supplied for all liquibase execution types (be it update,
- * rollback, etc).
+ * One context is supplied for all liquibase execution types (be it update, rollback, etc).
  */
 public class LiquibaseContext implements Context {
 
+    private Map<String, String> changeLogParameters;
+    private String resourceDirectories;
+    private String credentialsId;
+    private Integer rollbackLastHours;
+    private String rollbackToTag;
+    private String rollbackToDate;
+    private boolean dropAll;
+    private String outputDirectory;
+    private String tag;
+    private String commandArguments;
     protected String changeLogFile;
     protected String url;
     protected String contexts;
     protected String liquibasePropertiesPath;
     protected String labels;
-    private Map<String, String> changeLogParameters;
-    private String resourceDirectories;
-    private String credentialsId;
     protected Integer rollbackCount = 0;
-    private Integer rollbackLastHours;
-    private String rollbackToTag;
-    private String rollbackToDate;
     protected boolean testRollbacks;
-    private boolean dropAll;
     protected boolean tagOnSuccessfulBuild;
-    private String outputDirectory;
-
-    private String tag;
-
-    private String commandArguments;
 
     void changeLogFile(String changeLogFile) {
         this.changeLogFile = changeLogFile;
@@ -179,17 +176,14 @@ public class LiquibaseContext implements Context {
     }
 
     public String composeChangeLogString() {
-        StringBuilder sb = new StringBuilder("");
-        String result = null;
+        StringBuilder sb = new StringBuilder();
         if (changeLogParameters != null) {
             for (Map.Entry<String, String> entry : changeLogParameters.entrySet()) {
                 sb.append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
             }
-            result = sb.substring(0, sb.length() - 1);
-        } else {
-            result = sb.toString();
+            return sb.substring(0, sb.length() - 1);
         }
-
-        return result;
+        return sb.toString();
     }
+
 }

@@ -1,14 +1,14 @@
 package pipelinescripts;
 
 node {
-  writeFile file: 'changeset.yml', text: changelog()
+    writeFile file: 'changeset.yml', text: changelog()
 
-  liquibaseUpdate(changeLogFile: 'changeset.yml', testRollbacks: true,
-          url: 'jdbc:h2:mem:builder-db')
+    liquibaseUpdate(changeLogFile: 'changeset.yml', testRollbacks: true,
+        url: 'jdbc:h2:mem:builder-db')
 }
 
 def changelog() {
-  """
+"""
 databaseChangeLog:
   - changeSet:
       id: shape-table-create
@@ -34,5 +34,4 @@ databaseChangeLog:
                   type: varchar(50)
 
 """
-
 }

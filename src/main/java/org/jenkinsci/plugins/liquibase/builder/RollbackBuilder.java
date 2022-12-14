@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
+import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.liquibase.exception.LiquibaseRuntimeException;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -46,41 +47,30 @@ public class RollbackBuilder extends AbstractLiquibaseBuilder {
     }
 
     @Override
-    protected void addCommandAndArguments(ArgumentListBuilder cliCommand, Properties configProperties, Run<?, ?> build, EnvVars environment, TaskListener listener) throws IOException {
-        try {
-            RollbackStrategy rollbackStrategy = RollbackStrategy.valueOf(rollbackType);
+    protected void addCommandAndArguments(ArgumentListBuilder cliCommand, Properties configProperties,
+            Run<?, ?> build, EnvVars environment, TaskListener listener) throws IOException {
+        RollbackStrategy rollbackStrategy = RollbackStrategy.valueOf(rollbackType);
 
-            if (rollbackStrategy == RollbackStrategy.COUNT) {
-                String resolvedRollbackCount = Util.replaceMacro(numberOfChangesetsToRollback, environment);
-                int rollbackCount;
-                if (resolvedRollbackCount != null) {
-                    rollbackCount = Integer.parseInt(resolvedRollbackCount);
-                } else {
-                    throw new LiquibaseRuntimeException(
-                            "Invalid value '" + numberOfChangesetsToRollback + "' for rollback count.");
-                }
-
-                cliCommand.add("rollbackCount", String.valueOf(rollbackCount));
+        if (rollbackStrategy == RollbackStrategy.COUNT) {
+            String resolvedRollbackCount = Util.replaceMacro(numberOfChangesetsToRollback, environment);
+            int rollbackCount;
+            try {
+                rollbackCount = Integer.parseInt(resolvedRollbackCount);
+            } catch (NumberFormatException e) {
+                throw new LiquibaseRuntimeException("Invalid value '" + numberOfChangesetsToRollback + "' for rollback count.");
             }
-
-            if (rollbackStrategy == RollbackStrategy.DATE || rollbackStrategy == RollbackStrategy.RELATIVE) {
-                Date targetDate = resolveTargetDate(rollbackStrategy, environment);
-
-                cliCommand.add("rollbackDate", String.valueOf(targetDate));
-            }
-
-            if (rollbackStrategy == RollbackStrategy.TAG) {
-                String resolvedTag = Util.replaceMacro(rollbackToTag, environment);
-                cliCommand.add("rollback", resolvedTag);
-            }
-        } catch (Exception e) {
-            throw new IOException(e);
+            cliCommand.add("rollbackCount", String.valueOf(rollbackCount));
         }
-    }
 
-    protected Date resolveTargetDate(RollbackStrategy rollbackStrategy, EnvVars environment) {
-        Date now = new Date();
-        return resolveTargetDate(rollbackStrategy, now, environment);
+        if (rollbackStrategy == RollbackStrategy.DATE || rollbackStrategy == RollbackStrategy.RELATIVE) {
+            Date targetDate = resolveTargetDate(rollbackStrategy, new Date(), environment);
+            cliCommand.add("rollbackDate", String.valueOf(targetDate));
+        }
+
+        if (rollbackStrategy == RollbackStrategy.TAG) {
+            String resolvedTag = Util.replaceMacro(rollbackToTag, environment);
+            cliCommand.add("rollback", resolvedTag);
+        }
     }
 
     protected Date resolveTargetDate(RollbackStrategy rollbackStrategy, Date now, EnvVars environment) {
@@ -91,7 +81,13 @@ public class RollbackBuilder extends AbstractLiquibaseBuilder {
 
             String lastHours = Util.replaceMacro(rollbackLastHours, environment);
             if (lastHours != null) {
-                instance.add(Calendar.HOUR, 0 - Integer.parseInt(lastHours));
+                int hours = 0;
+                try {
+                    hours = Integer.parseInt(lastHours);
+                } catch (NumberFormatException e) {
+                    throw new LiquibaseRuntimeException("Invalid value for rollback to last hours value: " + lastHours, e);
+                }
+                instance.add(Calendar.HOUR, 0 - hours);
             }
             targetDate = instance.getTime();
         } else {
@@ -99,8 +95,7 @@ public class RollbackBuilder extends AbstractLiquibaseBuilder {
             try {
                 targetDate = simpleDateFormat.parse(rollbackDate);
             } catch (ParseException e) {
-                throw new LiquibaseRuntimeException("Invalid value for rollback to date value:" + rollbackDate,
-                        e);
+                throw new LiquibaseRuntimeException("Invalid value for rollback to date value: " + rollbackDate, e);
             }
         }
         return targetDate;
@@ -156,11 +151,11 @@ public class RollbackBuilder extends AbstractLiquibaseBuilder {
         this.rollbackLastHours = rollbackLastHours;
     }
 
+    @Symbol("liquibaseRollback")
     @Extension
     public static class DescriptorImpl extends AbstractLiquibaseDescriptor {
 
         public DescriptorImpl() {
-            load();
         }
 
         public DescriptorImpl(Class<? extends RollbackBuilder> clazz) {
@@ -176,6 +171,6 @@ public class RollbackBuilder extends AbstractLiquibaseBuilder {
         public String getDisplayName() {
             return "Liquibase: Roll Back Changes";
         }
-
     }
+
 }

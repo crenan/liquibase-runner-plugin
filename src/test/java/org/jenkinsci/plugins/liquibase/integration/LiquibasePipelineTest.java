@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -73,19 +70,5 @@ public class LiquibasePipelineTest {
     private String generatePipelineScript(File workspace, String resourcePath) throws IOException {
         String template = IOUtils.toString(getClass().getResourceAsStream(resourcePath));
         return template.replaceAll("@WORKSPACE@", workspace.getAbsolutePath());
-    }
-
-    private static Matcher<File> exists() {
-        return new TypeSafeMatcher<File>() {
-            @Override
-            protected boolean matchesSafely(File item) {
-                return item.exists();
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("file which exists");
-            }
-        };
     }
 }

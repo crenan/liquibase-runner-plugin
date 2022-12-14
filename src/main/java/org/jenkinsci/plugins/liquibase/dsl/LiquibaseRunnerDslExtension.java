@@ -14,11 +14,11 @@ public class LiquibaseRunnerDslExtension extends ContextExtensionPoint {
     @DslExtensionMethod(context = StepContext.class)
     @RequiresPlugin(id = "liquibase-runner", minimumVersion = "1.3.0")
     public Object liquibaseUpdate(Runnable closure) {
-        UpdateBuilder builder = new UpdateBuilder();
+        UpdateBuilder updateBuilder = new UpdateBuilder();
         LiquibaseContext context = composeContext(closure);
-        setCommonBuilderProperties(builder, context);
+        setCommonBuilderProperties(updateBuilder, context);
 
-        return builder;
+        return updateBuilder;
     }
 
     @DslExtensionMethod(context = StepContext.class)
@@ -64,23 +64,23 @@ public class LiquibaseRunnerDslExtension extends ContextExtensionPoint {
     @DslExtensionMethod(context = StepContext.class)
     @RequiresPlugin(id = "liquibase-runner", minimumVersion = "1.3.0")
     public Object liquibaseDropAll(Runnable closure) {
-        DropAllBuilder builder = new DropAllBuilder();
+        DropAllBuilder dropAllBuilder = new DropAllBuilder();
         LiquibaseContext context = composeContext(closure);
-        setCommonBuilderProperties(builder, context);
+        setCommonBuilderProperties(dropAllBuilder, context);
 
-        return builder;
+        return dropAllBuilder;
     }
 
     @DslExtensionMethod(context = StepContext.class)
     @RequiresPlugin(id = "liquibase-runner", minimumVersion = "1.3.0")
     public Object liquibaseCli(Runnable closure) {
-        RawCliBuilder tagBuilder = new RawCliBuilder();
+        RawCliBuilder rawCliBuilder = new RawCliBuilder();
         LiquibaseContext context = composeContext(closure);
-        setCommonBuilderProperties(tagBuilder, context);
+        setCommonBuilderProperties(rawCliBuilder, context);
 
-        tagBuilder.setCommandArguments(context.getCommandArguments());
+        rawCliBuilder.setCommandArguments(context.getCommandArguments());
 
-        return tagBuilder;
+        return rawCliBuilder;
     }
 
     private static LiquibaseContext composeContext(Runnable closure) {
@@ -99,4 +99,5 @@ public class LiquibaseRunnerDslExtension extends ContextExtensionPoint {
         builder.setCredentialsId(context.getCredentialsId());
         builder.setResourceDirectories(context.getResourceDirectories());
     }
+
 }

@@ -1,9 +1,9 @@
 package pipelinescripts;
 
 node {
-  ws('@WORKSPACE@') {
+    ws('@WORKSPACE@') {
 
-    liquibaseUpdate(changeLogFile: 'sunny-day-changeset.xml', testRollbacks: true)
-  }
+        liquibaseUpdate(changeLogFile: 'sunny-day-changeset.xml', testRollbacks: true)
+    }
 }
 

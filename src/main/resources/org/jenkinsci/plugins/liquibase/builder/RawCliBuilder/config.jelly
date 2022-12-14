@@ -10,11 +10,9 @@
         </f:entry>
     </f:section>
 
-    <st:include
-            page="liquibase-common-connection-config.jelly"
-            class="org.jenkinsci.plugins.liquibase.builder.AbstractLiquibaseBuilder"/>
-    <st:include
-            page="liquibase-common-install-config.jelly"
-            class="org.jenkinsci.plugins.liquibase.builder.AbstractLiquibaseBuilder"/>
+    <st:include page="liquibase-common-connection-config.jelly"
+                class="org.jenkinsci.plugins.liquibase.builder.AbstractLiquibaseBuilder"/>
+    <st:include page="liquibase-common-install-config.jelly"
+                class="org.jenkinsci.plugins.liquibase.builder.AbstractLiquibaseBuilder"/>
 </j:jelly>
 

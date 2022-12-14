@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.liquibase.builder;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.*;
 import hudson.model.*;
 import hudson.tasks.Builder;
@@ -12,7 +13,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.Properties;
-import javax.annotation.Nonnull;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.plugins.liquibase.common.LiquibaseProperty;
 import org.jenkinsci.plugins.liquibase.common.PropertiesAssembler;
@@ -26,7 +26,6 @@ public abstract class AbstractLiquibaseBuilder extends Builder implements Simple
     private static final Logger LOG = LoggerFactory.getLogger(AbstractLiquibaseBuilder.class);
 
     protected String installationName;
-
     protected String changeLogFile;
     protected String url;
     protected String contexts;
@@ -42,7 +41,6 @@ public abstract class AbstractLiquibaseBuilder extends Builder implements Simple
     protected transient String password;
 
     public AbstractLiquibaseBuilder() {
-
     }
 
     public LiquibaseInstallation getInstallation(EnvVars env, TaskListener listener, FilePath workspace) throws IOException, InterruptedException {
@@ -91,16 +89,26 @@ public abstract class AbstractLiquibaseBuilder extends Builder implements Simple
         return this;
     }
 
+    @Override
     abstract public Descriptor<Builder> getDescriptor();
 
+    /**
+     *
+     * @param build
+     * @param workspace
+     * @param launcher
+     * @param listener
+     * @throws InterruptedException
+     * @throws IOException
+     */
     @Override
-    public void perform(@Nonnull Run<?, ?> build,
-            @Nonnull FilePath workspace,
-            @Nonnull Launcher launcher,
-            @Nonnull TaskListener listener) throws InterruptedException, IOException {
+    public void perform(@NonNull Run<?, ?> build,
+            @NonNull FilePath workspace,
+            @NonNull Launcher launcher,
+            @NonNull TaskListener listener) throws InterruptedException, IOException {
 
         final PrintStream log = listener.getLogger();
-        log.println("\n\nRunning " + getDescriptor().getDisplayName() + "....");
+        log.println("\n\nRunning " + getDescriptor().getDisplayName() + " ...");
 
         final EnvVars environment = build.getEnvironment(listener);
 
@@ -122,12 +130,12 @@ public abstract class AbstractLiquibaseBuilder extends Builder implements Simple
 
         if (!Strings.isNullOrEmpty(installation.getDatabaseDriverUrl())) {
             Iterable<String> urls = Splitter.on(",").trimResults().split(installation.getDatabaseDriverUrl());
-            for (String url : urls) {
-                String filename = url.substring(installation.getDatabaseDriverUrl().lastIndexOf("/") + 1);
+            for (String driverUrl : urls) {
+                String filename = driverUrl.substring(installation.getDatabaseDriverUrl().lastIndexOf("/") + 1);
                 File localJar = new File(installation.getHome(), "lib/" + filename);
                 if (!localJar.exists()) {
-                    log.println("Downloading " + url + " to " + localJar);
-                    URL downloadUrl = new URL(url);
+                    log.println("Downloading " + driverUrl + " to " + localJar);
+                    URL downloadUrl = new URL(driverUrl);
                     new FilePath(localJar).copyFrom(downloadUrl);
                 }
             }
@@ -145,20 +153,17 @@ public abstract class AbstractLiquibaseBuilder extends Builder implements Simple
         addCommandAndArguments(cliCommand, configProperties, build, environment, listener);
 
         int exitStatus = launcher.launch().cmds(cliCommand).stdout(listener).join();
-        boolean result = didErrorsOccur(build, exitStatus);
+        boolean result = didErrorsOccur(exitStatus);
         if (!result) {
             throw new AbortException("Liquibase failed due to errors.");
         }
     }
 
-    protected abstract void addCommandAndArguments(ArgumentListBuilder cliCommand, Properties configProperties, Run<?, ?> build, EnvVars environment, TaskListener listener) throws IOException;
+    protected abstract void addCommandAndArguments(ArgumentListBuilder cliCommand, Properties configProperties,
+            Run<?, ?> build, EnvVars environment, TaskListener listener) throws IOException;
 
-    private boolean didErrorsOccur(Run<?, ?> build, int exitStatus) throws IOException {
-        boolean result = true;
-        if (exitStatus != 0) {
-            result = false;
-        }
-        return result;
+    private boolean didErrorsOccur(int exitStatus) throws IOException {
+        return exitStatus == 0;
     }
 
     public String getChangeLogFile() {
@@ -233,24 +238,26 @@ public abstract class AbstractLiquibaseBuilder extends Builder implements Simple
         this.credentialsId = credentialsId;
     }
 
-    @DataBoundSetter
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @DataBoundSetter
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     @Deprecated
     public String getUsername() {
         return username;
     }
 
     @Deprecated
+    @DataBoundSetter
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Deprecated
     public String getPassword() {
         return password;
+    }
+
+    @Deprecated
+    @DataBoundSetter
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public void clearLegacyCredentials() {
@@ -270,14 +277,15 @@ public abstract class AbstractLiquibaseBuilder extends Builder implements Simple
         if (value != null && !value.equals("")) {
             cliCommand.addKeyValuePair("--", key, value, false);
         }
-
     }
 
     protected void addArgument(ArgumentListBuilder cliCommand, String key, String value, boolean maskValue) {
         cliCommand.addKeyValuePair("--", key, value, maskValue);
     }
 
-    protected void addGlobalArguments(ArgumentListBuilder cliCommand, Properties configProperties, Run<?, ?> build, EnvVars environment, TaskListener listener) throws IOException, InterruptedException {
+    protected void addGlobalArguments(ArgumentListBuilder cliCommand, Properties configProperties,
+            Run<?, ?> build, EnvVars environment, TaskListener listener) throws IOException, InterruptedException {
+
         final String classpath = Util.replaceMacro(getResourceDirectories(), environment);
         if (classpath != null) {
             addArgument(cliCommand, "classpath", classpath.replaceAll("\\s*,\\s*", ";"));

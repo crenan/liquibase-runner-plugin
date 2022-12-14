@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.liquibase.install;
 
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.Functions;
 import hudson.Util;
 import hudson.model.EnvironmentSpecific;
 import hudson.model.Node;
@@ -28,8 +29,8 @@ public class LiquibaseInstallation extends ToolInstallation implements NodeSpeci
 
     @DataBoundConstructor
     public LiquibaseInstallation(String name, String home, String databaseDriverUrl, List<? extends ToolProperty<?>> properties) {
-        super(Util.fixEmptyAndTrim(name), Util.fixEmptyAndTrim("liquibase"), properties);
-        liquibaseHome = home;
+        super(Util.fixEmptyAndTrim(name), "liquibase", properties);
+        this.liquibaseHome = home;
         this.databaseDriverUrl = databaseDriverUrl;
     }
 
@@ -45,22 +46,25 @@ public class LiquibaseInstallation extends ToolInstallation implements NodeSpeci
 
     @Override
     public String getHome() {
-        String resolvedHome;
         if (liquibaseHome != null) {
-            resolvedHome = liquibaseHome;
-        } else {
-            resolvedHome = super.getHome();
+            return liquibaseHome;
         }
-        return resolvedHome;
+        return super.getHome();
     }
 
-    public File getLiquibaseJar() {
-        return new File(liquibaseHome, "liquibase.jar");
+    public File getLiquibaseExe() {
+        // Starting in v4.14.0, liquibase.jar was splitted in liquibase-core.jar
+        // and liquibase-commercial.jar (https://www.liquibase.com/blog/two-jars-beat-as-one)
+        // Changed to get the executable file directly
+        if (Functions.isWindows()) {
+            return new File(liquibaseHome, "liquibase.bat");
+        }
+        return new File(liquibaseHome, "liquibase");
     }
 
     public boolean isValidLiquibaseHome() {
-        final File liquibaseJar = getLiquibaseJar();
-        return liquibaseJar != null && liquibaseJar.exists();
+        final File liquibaseExe = getLiquibaseExe();
+        return liquibaseExe.exists();
     }
 
     public String getDatabaseDriverUrl() {
@@ -69,7 +73,7 @@ public class LiquibaseInstallation extends ToolInstallation implements NodeSpeci
 
     @DataBoundSetter
     public void setDatabaseDriverUrl(String databaseDriverUrl) {
-        this.databaseDriverUrl = databaseDriverUrl;
+        this.databaseDriverUrl = Util.fixEmptyAndTrim(databaseDriverUrl);
     }
 
     @Extension
@@ -78,7 +82,6 @@ public class LiquibaseInstallation extends ToolInstallation implements NodeSpeci
         private LiquibaseInstallation[] installations = new LiquibaseInstallation[0];
 
         public DescriptorImpl() {
-            load();
         }
 
         @Override
@@ -102,4 +105,5 @@ public class LiquibaseInstallation extends ToolInstallation implements NodeSpeci
             save();
         }
     }
+
 }

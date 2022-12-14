@@ -1,11 +1,10 @@
 package dsl;
 
 freeStyleJob('@JOB_NAME@') {
-  customWorkspace('@WORKSPACE@')
-  steps {
-    liquibaseUpdate {
-      changeLogFile('sunny-day-changeset.xml')
-
+    customWorkspace('@WORKSPACE@')
+    steps {
+        liquibaseUpdate {
+            changeLogFile('sunny-day-changeset.xml')
+        }
     }
-  }
 }

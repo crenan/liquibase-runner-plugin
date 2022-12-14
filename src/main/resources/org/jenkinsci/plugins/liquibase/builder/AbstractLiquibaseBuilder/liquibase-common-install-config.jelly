@@ -13,7 +13,7 @@
             </select>
         </f:entry>
 
-        <f:entry help="/plugin/liquibase-runner/help-resourceDirectories.html" title="Search Directories" field="resourceDirectories">
+        <f:entry title="Search Directories" field="resourceDirectories">
             <f:textbox value="${instance.resourceDirectories}"/>
         </f:entry>
     </f:section>

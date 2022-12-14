@@ -89,10 +89,10 @@ public class CredentialsTest {
         evaluator.setCredentialsId(credentialsId);
         project.getBuildersList().add(evaluator);
 
-        FreeStyleBuild build = project.scheduleBuild2(0).get();
+        FreeStyleBuild freeStyleBuild = project.scheduleBuild2(0).get();
 
         Properties liquibaseProperties =
-                PropertiesAssembler.createLiquibaseProperties(evaluator, build, new EnvVars(), build.getWorkspace());
+                PropertiesAssembler.createLiquibaseProperties(evaluator, freeStyleBuild, new EnvVars(), freeStyleBuild.getWorkspace());
 
         String resolvedUsername = getProperty(liquibaseProperties, LiquibaseProperty.USERNAME);
         String resolvedPassword = getProperty(liquibaseProperties, LiquibaseProperty.PASSWORD);

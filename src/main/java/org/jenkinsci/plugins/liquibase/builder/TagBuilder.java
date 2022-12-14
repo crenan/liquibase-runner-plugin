@@ -10,11 +10,12 @@ import hudson.model.TaskListener;
 import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
 import java.util.Properties;
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 /**
- * Jenkins builder which evaluates liquibase changesets.
+ * Build step that invokes liquibase's tag command against a target database.
  */
 @SuppressWarnings("ProhibitedExceptionThrown")
 public class TagBuilder extends AbstractLiquibaseBuilder {
@@ -30,7 +31,8 @@ public class TagBuilder extends AbstractLiquibaseBuilder {
     }
 
     @Override
-    protected void addCommandAndArguments(ArgumentListBuilder cliCommand, Properties configProperties, Run<?, ?> build, EnvVars environment, TaskListener listener) {
+    protected void addCommandAndArguments(ArgumentListBuilder cliCommand, Properties configProperties,
+            Run<?, ?> build, EnvVars environment, TaskListener listener) {
         String tagString = this.getTag();
         if (tagString == null || tagString.trim().equals("")) {
             tagString = build.getParent().getName() + "-" + build.getNumber();
@@ -53,11 +55,11 @@ public class TagBuilder extends AbstractLiquibaseBuilder {
         this.tag = tag;
     }
 
+    @Symbol("liquibaseTag")
     @Extension
     public static class DescriptorImpl extends AbstractLiquibaseDescriptor {
 
         public DescriptorImpl() {
-            load();
         }
 
         public DescriptorImpl(Class<? extends TagBuilder> clazz) {
